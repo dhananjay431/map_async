@@ -1,5 +1,5 @@
 import { Component, OnInit, VERSION } from '@angular/core';
-import { from, Subject } from 'rxjs';
+import { from, of, Subject } from 'rxjs';
 import {
   exhaustMap,
   mergeMap,
@@ -7,6 +7,7 @@ import {
   debounceTime,
   distinctUntilChanged,
   tap,
+  delay,
 } from 'rxjs/operators';
 
 @Component({
@@ -70,12 +71,20 @@ export class AppComponent implements OnInit {
       },
     };
   }
-  setData = (d) => {
+  setData = (d: any) => {
     this.data = d;
   };
   setName(url) {
+    // let z = this.dt();
+    // z.data = of([]);
+    // z.data = delay(2000)
+    // z.data = mergeMap(d=>from(fetch(url).then((response) => response.json()))) ;
+    // z.data = tap(this.setData);
+    // return z.val();
+    //return
+    let resp = (r: any) => r.json();
     let z = this.dt();
-    z.data = from(fetch(url).then((response) => response.json()));
+    z.data = from(fetch(url).then(resp));
     z.data = tap(this.setData);
     return z.val();
   }
