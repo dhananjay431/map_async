@@ -18,20 +18,23 @@ import {
 export class AppComponent implements OnInit {
   name: any = 'Angular ' + VERSION.major;
   data: any = {};
-  q(t: any) {
-    let qv = new Promise((a, b) => {
-      setTimeout(() => {
-        fetch('https://jsonplaceholder.typicode.com/todos/' + t.num)
-          .then((response) => response.json())
-          .then((r) => {
-            r.num = t.num;
-            r.rnum = t.rnum;
-            a(r);
-          });
-      }, t.rnum);
-    });
-    return from(qv);
-  }
+  r = (response) => response.json();
+
+  to = (a, t) => () => {
+    fetch('https://jsonplaceholder.typicode.com/todos/' + t.num)
+      .then(this.r)
+      .then((r) => {
+        r.num = t.num;
+        r.rnum = t.rnum;
+        a(r);
+      });
+  };
+
+  ab = (t) => (a, b) => {
+    setTimeout(this.to(a, t), t.rnum);
+  };
+
+  q = (t: any) => from(new Promise(this.ab(t)));
 
   sub: any = new Subject().pipe(
     // debounceTime(800),
@@ -52,12 +55,12 @@ export class AppComponent implements OnInit {
       'https://jsonplaceholder.typicode.com/users',
     ];
 
-    return this.setName(arr[this.rn(arr.length)]);
+    let url = this.rn(arr.length);
+    return this.setName(arr[url]);
   }
   changeData() {
-
     let z = this.dt();
-     z.data = forkJoin({
+    z.data = forkJoin({
       a: this.changeData2(),
       b: this.changeData2(),
       c: this.changeData2(),
@@ -84,7 +87,7 @@ export class AppComponent implements OnInit {
     };
   }
   setData = (d: any) => {
-    console.log("setData =>",d);
+    console.log('setData =>', d);
     this.data = d;
   };
   setName(url) {
