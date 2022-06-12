@@ -1,5 +1,5 @@
 import { Component, OnInit, VERSION } from '@angular/core';
-import { from, of, Subject } from 'rxjs';
+import { forkJoin, from, of, Subject } from 'rxjs';
 import {
   exhaustMap,
   mergeMap,
@@ -42,6 +42,18 @@ export class AppComponent implements OnInit {
   rn(n) {
     return Math.floor(Math.random() * n);
   }
+  changeData2() {
+    let arr = [
+      'https://jsonplaceholder.typicode.com/posts',
+      'https://jsonplaceholder.typicode.com/comments',
+      'https://jsonplaceholder.typicode.com/albums',
+      'https://jsonplaceholder.typicode.com/photos',
+      'https://jsonplaceholder.typicode.com/todos',
+      'https://jsonplaceholder.typicode.com/users',
+    ];
+
+    return this.setName(arr[this.rn(arr.length)]);
+  }
   changeData() {
     let arr = [
       'https://jsonplaceholder.typicode.com/posts',
@@ -52,7 +64,7 @@ export class AppComponent implements OnInit {
       'https://jsonplaceholder.typicode.com/users',
     ];
 
-    this.name = this.setName(arr[this.rn(arr.length)]);
+    this.name = this.changeData2();
   }
   dt() {
     function ob(a: any, ...b) {
@@ -90,7 +102,11 @@ export class AppComponent implements OnInit {
   }
   ngOnInit() {
     this.start();
-    this.name = this.setName('https://jsonplaceholder.typicode.com/users');
+    this.name = forkJoin({
+      a: this.changeData2(),
+      b: this.changeData2(),
+      c: this.changeData2(),
+    });
   }
 
   num: any = 1;
