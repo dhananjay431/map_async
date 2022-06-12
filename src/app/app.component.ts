@@ -55,16 +55,16 @@ export class AppComponent implements OnInit {
     return this.setName(arr[this.rn(arr.length)]);
   }
   changeData() {
-    let arr = [
-      'https://jsonplaceholder.typicode.com/posts',
-      'https://jsonplaceholder.typicode.com/comments',
-      'https://jsonplaceholder.typicode.com/albums',
-      'https://jsonplaceholder.typicode.com/photos',
-      'https://jsonplaceholder.typicode.com/todos',
-      'https://jsonplaceholder.typicode.com/users',
-    ];
 
-    this.name = this.changeData2();
+    let z = this.dt();
+     z.data = forkJoin({
+      a: this.changeData2(),
+      b: this.changeData2(),
+      c: this.changeData2(),
+    });
+    z.data = tap(this.setData);
+
+    this.name = z.val();
   }
   dt() {
     function ob(a: any, ...b) {
@@ -84,6 +84,7 @@ export class AppComponent implements OnInit {
     };
   }
   setData = (d: any) => {
+    console.log("setData =>",d);
     this.data = d;
   };
   setName(url) {
@@ -97,16 +98,12 @@ export class AppComponent implements OnInit {
     let resp = (r: any) => r.json();
     let z = this.dt();
     z.data = from(fetch(url).then(resp));
-    z.data = tap(this.setData);
+    // z.data = tap(this.setData);
     return z.val();
   }
   ngOnInit() {
     this.start();
-    this.name = forkJoin({
-      a: this.changeData2(),
-      b: this.changeData2(),
-      c: this.changeData2(),
-    });
+    this.changeData();
   }
 
   num: any = 1;
